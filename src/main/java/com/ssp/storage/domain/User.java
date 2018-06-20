@@ -1,10 +1,16 @@
 package com.ssp.storage.domain;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
@@ -31,18 +37,24 @@ public class User {
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;
 
+	@OneToMany(cascade = { CascadeType.ALL }, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "FolderId")
+	private List<Folder> folders;
+
+	@OneToMany(cascade = { CascadeType.ALL }, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JoinColumn(name = "questionsId")
+	private List<UserSecurityQuestion> questions;
+
 	public User() {
 		super();
 	}
 
-	public User(Long id, String firstName, String lastName, String password, String username, @Email String email) {
-		super();
-		this.id = id;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.password = password;
-		this.username = username;
-		this.email = email;
+	public List<Folder> getFolders() {
+		return folders;
+	}
+
+	public void setFolders(List<Folder> folders) {
+		this.folders = folders;
 	}
 
 	public String getEmail() {
@@ -91,6 +103,19 @@ public class User {
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public User(Long id, @Email String email, String firstName, String lastName, String username, String password,
+			List<Folder> folders, List<UserSecurityQuestion> questions) {
+		super();
+		this.id = id;
+		this.email = email;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.username = username;
+		this.password = password;
+		this.folders = folders;
+		this.questions = questions;
 	}
 
 	@Override
